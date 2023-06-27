@@ -26,12 +26,28 @@ a {
   color: inherit;
 }
 
-/* @media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
-  body {
-    color: white;
-    background: black;
-  }
-} */
+.MuiDateCalendar-root {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.MuiPickersCalendarHeader-root {
+  padding: 1.6rem 0.6rem !important;
+}
+
+.MuiPickersCalendarHeader-labelContainer {
+  font-size: 1.8rem;
+}
+
+.MuiButtonBase-root svg {
+  width: 2rem;
+  height: 100%;
+}
+
+.MuiDayCalendar-weekDayLabel {
+  font-size: 1.6rem;
+}
+
+.MuiPickersDay-root {
+  font-size: 1.6rem !important;
+}
