@@ -14,11 +14,12 @@ const hours = [
   { start: "10:00", end: "10:30", available: true },
 ];
 
-export default function Calendar() {
+export default function Calendar({ toggleHours }) {
   const [date, setDate] = useState(dayjs());
 
   const onChange = (newDate) => {
     console.log(newDate.$d);
+    toggleHours(newDate.$d);
     setDate(newDate);
   };
 
@@ -30,14 +31,6 @@ export default function Calendar() {
         onChange={onChange}
         views={["day"]}
       />
-      {hours.map((hour) => (
-        <HourSelector
-          start={hour.start}
-          end={hour.end}
-          available={hour.available}
-          key={hour.start}
-        />
-      ))}
     </div>
   );
 }
