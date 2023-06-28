@@ -1,37 +1,62 @@
-import { collection, doc, setDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  setDoc,
+  getDoc,
+  updateDoc,
+  arrayUnion,
+  query,
+  getDocs,
+  where,
+} from "firebase/firestore";
 import { FirebaseDB } from "./config";
 
-const event = {
-  title: "",
-  description: "",
-  duration: "30",
-  newMembers: true,
-  availability: {
-    dates: {
-      end: "2021-10-31",
-      // if no end, keep accepting
-    },
-    monday: [
-      { start: "09:00", end: "13:00" },
-      { start: "14:00", end: "17:00" },
-    ],
-    tuesday: [
-      { start: "09:00", end: "10:00" },
-      { start: "15:00", end: "17:00" },
-    ],
-    wednesday: [{ start: "09:00", end: "17:00" }],
-    thursday: [{ start: "09:00", end: "17:00" }],
-    friday: [{ start: "09:00", end: "17:00" }],
-  },
-  booked: {
-    "2021-10-01": [
-      {
-        start: "09:00",
-        end: "10:00",
-        members: [{ name: "John Doe", email: "john@mail.com" }],
-      },
-    ],
-  },
+// {
+//   title: "",
+//   description: "",
+//   duration: "30",
+//   newMembers: true,
+//   availability: {
+//     monday: [
+//       { start: "09:00", end: "13:00" },
+//       { start: "14:00", end: "17:00" },
+//     ],
+//     tuesday: [
+//       { start: "09:00", end: "10:00" },
+//       { start: "15:00", end: "17:00" },
+//     ],
+//     wednesday: [{ start: "09:00", end: "17:00" }],
+//     thursday: [{ start: "09:00", end: "17:00" }],
+//     friday: [{ start: "09:00", end: "17:00" }],
+//   },
+//   booked: {
+//     "2021-10-01": [
+//       {
+//         start: "09:00",
+//         end: "10:00",
+//         members: [{ name: "John Doe", email: "john@mail.com" }],
+//       },
+//     ],
+//   },
+// };
+
+export const validateURL = async (url) => {
+  // Validate if url (url is event id) exists in database
+  console.log(url);
+  const eventRef = doc(FirebaseDB, "events", url);
+  const eventDoc = await getDoc(eventRef);
+
+  if (eventDoc.exists()) {
+    return {
+      ok: true,
+      event: await eventDoc.data(),
+    };
+  }
+
+  return {
+    ok: false,
+    error: "Event does not exist",
+  };
 };
 
 export const createNewEvent = async ({
@@ -90,16 +115,17 @@ export const updateEvent = async (updatedEvent) => {
 
 export const bookEvent = async (eventId, date, time, members) => {
   try {
+    console.log(time);
     const eventRef = doc(FirebaseDB, "events", eventId);
 
-    const event = await eventRef.get();
+    const event = await getDoc(eventRef);
 
-    const booked = event.data().booked;
+    const data = event.data();
 
     // if date exists, push to array
-    if (booked[date]) {
+    if (data.booked[date]) {
       // Validate if time is already booked
-      const isBooked = booked[date].find((bookedTime) => {
+      const isBooked = data.booked[date].find((bookedTime) => {
         return (
           (time.start >= bookedTime.start && time.start < bookedTime.end) ||
           (time.end > bookedTime.start && time.end <= bookedTime.end)
@@ -108,29 +134,40 @@ export const bookEvent = async (eventId, date, time, members) => {
 
       // if time is already booked, return error
       if (isBooked) {
+        console.log("this time is already booked");
         return {
           ok: false,
           error: "This time is already booked",
         };
       }
 
-      booked[date].push({
-        start: time.start,
-        end: time.end,
-        members,
+      await updateDoc(eventRef, {
+        booked: {
+          [date]: arrayUnion({
+            start: time.split("-")[0].trim(),
+            end: time.split("-")[1].trim(),
+            members,
+          }),
+        },
       });
     } else {
       // if date doesn't exist, create new array
-      booked[date] = [
+      await setDoc(
+        eventRef,
         {
-          start: time.start,
-          end: time.start,
-          members,
+          booked: {
+            [date]: [
+              {
+                start: time.split("-")[0].trim(),
+                end: time.split("-")[1].trim(),
+                members,
+              },
+            ],
+          },
         },
-      ];
+        { merge: true }
+      );
     }
-
-    await setDoc(eventRef, { booked }, { merge: true });
 
     return {
       ok: true,
@@ -183,9 +220,9 @@ export const getUserEvents = async (uid) => {
     const userEvents = [];
     const eventsRef = collection(FirebaseDB, "events");
 
-    const query = eventsRef.where("uid", "==", uid);
+    const q = query(eventsRef, where("uid", "==", uid));
 
-    const events = await query.get();
+    const events = await getDocs(q);
 
     events.docs.forEach((doc) => {
       userEvents.push(doc.data());

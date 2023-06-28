@@ -1,8 +1,9 @@
 const { createSlice } = require("@reduxjs/toolkit");
 
 const initialState = {
+  currentEvent: {},
   events: [],
-  upcomingMeetings: [],
+  upcomingMeetings: {},
   pastMeetings: [],
   status: "",
 };
@@ -11,8 +12,14 @@ export const eventSlice = createSlice({
   name: "meeting",
   initialState,
   reducers: {
+    setCurrentEvent: (state, { payload }) => {
+      state.currentEvent = payload;
+    },
     setEvents: (state, { payload }) => {
-      state.meetings = payload;
+      state.events = payload;
+    },
+    pushUpcomingMeeting: (state, { payload }) => {
+      state.upcomingMeetings.push(payload);
     },
     setUpcomingMeetings: (state, { payload }) => {
       state.upcomingMeetings = payload;
@@ -21,20 +28,18 @@ export const eventSlice = createSlice({
       state.pastMeetings = payload;
     },
     clearEvents: (state) => {
-      state.meetings = [];
-      state.upcomingMeetings = [];
+      state.events = [];
+      state.upcomingMeetings = {};
       state.pastMeetings = [];
     },
     removeEvent: (state, { payload }) => {
-      state.meetings = state.meetings.filter(
-        (meeting) => meeting.id !== payload
-      );
+      state.events = state.meetings.filter((meeting) => meeting.id !== payload);
     },
     pushNewEvent: (state, { payload }) => {
-      state.meetings.push(payload);
+      state.events.push(payload);
     },
     updateEvent: (state, { payload }) => {
-      const index = state.meetings.findIndex(
+      const index = state.events.findIndex(
         (meeting) => meeting.id === payload.id
       );
       state.meetings[index] = payload;
@@ -54,4 +59,5 @@ export const {
   updateEvent,
   setStatus,
   removeEvent,
+  setCurrentEvent,
 } = eventSlice.actions;

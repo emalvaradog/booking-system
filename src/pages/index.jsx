@@ -2,12 +2,22 @@ import Head from "next/head";
 import Image from "next/image";
 import { Inter } from "next/font/google";
 import styles from "@/styles/Home.module.scss";
-import { AuthAction, withAuthUser, withAuthUserSSR } from "next-firebase-auth";
+import {
+  AuthAction,
+  useAuthUser,
+  withAuthUser,
+  withAuthUserSSR,
+} from "next-firebase-auth";
 import Link from "next/link";
+import Calendar from "@/components/Calendar/Calendar";
+import HourSelector from "@/components/HourSelector/HourSelector";
+import UserData from "@/components/UserData/UserData";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export function Home() {
+  const user = useAuthUser();
+
   return (
     <>
       <Head>
@@ -18,8 +28,11 @@ export function Home() {
       </Head>
       <main className={`${styles.main} ${inter.className}`}>
         <div>
-          <h1>HOME PAGE</h1>
-          <Link href="/login">LOGIN</Link>
+          <h1>Inicia sesión para comenzar o accede a un link</h1>
+
+          <Link href="/login">
+            <button>LOGIN</button>
+          </Link>
         </div>
       </main>
     </>

@@ -18,8 +18,8 @@ export default function Calendar({ toggleHours }) {
   const [date, setDate] = useState(dayjs());
 
   const onChange = (newDate) => {
-    console.log(newDate.$d);
-    toggleHours(newDate.$d);
+    const formatedDate = `${newDate.$D}-${newDate.$M + 1}-${newDate.$y}`;
+    toggleHours(formatedDate);
     setDate(newDate);
   };
 

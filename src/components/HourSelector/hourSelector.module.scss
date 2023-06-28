@@ -4,11 +4,13 @@
   color: white;
   padding: .8rem 1rem;
   border-radius: 5px;
+  cursor: pointer;
 }
 
 .inactive {
-  h1 {
+  p {
     text-decoration: line-through;
     opacity: 0.5;
   }
+  cursor: default;
 }
