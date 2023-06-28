@@ -73,6 +73,7 @@ export function ClientPage({ slug }) {
         router.push("/");
       } else {
         toast.error("Algo salió mal");
+        // WOW
       }
     } catch (e) {
       console.log(e);
