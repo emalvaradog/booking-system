@@ -15,6 +15,8 @@ export default function MeetingCard({ title, description, eventId }) {
         .catch((error) => {
           toast.error("Hubo un error al copiar el link: ");
         });
+    } else {
+      toast.error("Hubo un error al copiar el link: ");
     }
   }
 

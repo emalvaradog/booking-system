@@ -33,6 +33,8 @@ const AvailabilityForm = ({ sendForm, closeForm }) => {
   const [selectedDays, setSelectedDays] = useState([]);
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
 
   const handleDayChange = (event) => {
     const { value, checked } = event.target;
@@ -57,7 +59,7 @@ const AvailabilityForm = ({ sendForm, closeForm }) => {
     });
 
     // Print the availability object
-    sendForm(availability);
+    sendForm(availability, title, description);
 
     // Clear the form
     setSelectedDays([]);
@@ -71,6 +73,7 @@ const AvailabilityForm = ({ sendForm, closeForm }) => {
         <div className={styles.formHeader}>
           <h1>Crear evento</h1>
           <svg
+            onClick={closeForm}
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
             id="close"
@@ -79,6 +82,26 @@ const AvailabilityForm = ({ sendForm, closeForm }) => {
           </svg>
         </div>
         <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <TextField
+              id="title"
+              label="Title"
+              value={title}
+              onChange={(event) => setTitle(event.target.value)}
+              required
+              fullWidth
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              id="description"
+              label="Description"
+              value={description}
+              onChange={(event) => setDescription(event.target.value)}
+              multiline
+              fullWidth
+            />
+          </Grid>
           {daysOfWeek.map((day) => (
             <Grid item xs={6} sm={4} key={day.value}>
               <FormControlLabel
