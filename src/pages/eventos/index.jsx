@@ -16,9 +16,10 @@ import { setUpcomingMeetings } from "@/store/events/eventSlice";
 import MeetingCard from "@/components/MeetingCard/MeetingCard";
 import AvailabilityForm from "@/components/AvailabilityFOrm/FOrm";
 import { Toaster, toast } from "react-hot-toast";
+import { useRouter } from "next/router";
 
 export function Index() {
-  const { events } = useSelector((state) => state.events);
+  const { events, upcomingMeetings } = useSelector((state) => state.events);
   const dispatch = useDispatch();
   const user = useAuthUser();
   const [screen, setScreen] = useState("events");
@@ -45,6 +46,10 @@ export function Index() {
     dispatch(setUpcomingMeetings(upcomingMeetings));
   }, [events]);
 
+  function handleScreenChange(screen) {
+    setScreen(screen);
+  }
+
   function handleCreateEvent(
     availability,
     title,
@@ -64,6 +69,7 @@ export function Index() {
     try {
       dispatch(startCreatingNewEvent(newEvent));
       toast.success("Evento creado correctamente");
+      setCreateEvent(false);
     } catch (error) {
       toast.error("Error al crear el evento");
     }
@@ -82,8 +88,18 @@ export function Index() {
           <h1>{user.displayName}</h1>
         </div>
         <div className={styles.containerMenuOptions}>
-          <p className={``}>Mis eventos</p>
-          <p>Mi agenda</p>
+          <p
+            onClick={() => handleScreenChange("events")}
+            className={`${screen === "events" ? styles.active : ""}`}
+          >
+            Mis eventos
+          </p>
+          <p
+            onClick={() => handleScreenChange("agenda")}
+            className={`${screen === "agenda" ? styles.active : ""}`}
+          >
+            Mi agenda
+          </p>
           <p onClick={handleLogout}>Cerrar sesión</p>
         </div>
       </div>
@@ -94,7 +110,7 @@ export function Index() {
               sendForm={handleCreateEvent}
               closeForm={() => setCreateEvent(false)}
             />
-          ) : (
+          ) : screen === "events" ? (
             <>
               <h1>Mis eventos</h1>
               <button onClick={() => setCreateEvent(true)}>
@@ -124,6 +140,25 @@ export function Index() {
                     description={event.description}
                     title={event.title}
                   />
+                ))}
+              </div>
+            </>
+          ) : (
+            <>
+              <h1>Mi agenda</h1>
+              <div className={styles.containerContentBGCards}>
+                {Object.keys(upcomingMeetings).map((date) => (
+                  <div key={date} className={styles.containerContentBGCardsDay}>
+                    <h1>{date}</h1>
+                    {upcomingMeetings[date].map((event) => (
+                      <MeetingCard
+                        key={`${event.start}-${event.end}`}
+                        title={`Reunión con ${event.members[0].clientName}`}
+                        description={`(${event.members[0].email}) de ${event.start} a ${event.end}`}
+                        sharable={false}
+                      />
+                    ))}
+                  </div>
                 ))}
               </div>
             </>

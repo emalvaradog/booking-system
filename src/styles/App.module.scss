@@ -72,8 +72,16 @@
       }
 
       &Cards {
+        width: 100%;
+        overflow: auto;
+        display: flex;
+        gap: 2rem;
         margin-top: 4rem;
       }
     }
   }
+}
+
+.active {
+  font-weight: bold;
 }

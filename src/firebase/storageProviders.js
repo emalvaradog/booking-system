@@ -78,7 +78,7 @@ export const createNewEvent = async ({
       newMembers,
       booked: {},
       uid,
-      eventId: newEventRef.id,
+      id: newEventRef.id,
     };
 
     await setDoc(newEventRef, newEvent);
