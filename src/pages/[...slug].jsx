@@ -49,10 +49,6 @@ export function ClientPage({ slug }) {
   }, [status]);
 
   useEffect(() => {
-    console.log(client);
-  }, [client]);
-
-  useEffect(() => {
     setEventId(slug[0]);
   }, [slug]);
 
@@ -68,13 +64,11 @@ export function ClientPage({ slug }) {
 
     try {
       dispatch(startBookingEvent(eventId, date, hour, [client]));
-      if (status === "bookingSuccess") {
-        toast.success("Reserva realizada con éxito");
+      toast.success("Reserva realizada con éxito");
+      setTimeout(() => {
         router.push("/");
-      } else {
-        toast.error("Algo salió mal");
-        // WOW
-      }
+      }, [1000]);
+      // WOW
     } catch (e) {
       console.log(e);
     }

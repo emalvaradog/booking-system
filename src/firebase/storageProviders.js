@@ -8,6 +8,7 @@ import {
   query,
   getDocs,
   where,
+  FieldValue,
 } from "firebase/firestore";
 import { FirebaseDB } from "./config";
 
@@ -115,7 +116,6 @@ export const updateEvent = async (updatedEvent) => {
 
 export const bookEvent = async (eventId, date, time, members) => {
   try {
-    console.log(time);
     const eventRef = doc(FirebaseDB, "events", eventId);
 
     const event = await getDoc(eventRef);
@@ -134,7 +134,6 @@ export const bookEvent = async (eventId, date, time, members) => {
 
       // if time is already booked, return error
       if (isBooked) {
-        console.log("this time is already booked");
         return {
           ok: false,
           error: "This time is already booked",
@@ -142,16 +141,16 @@ export const bookEvent = async (eventId, date, time, members) => {
       }
 
       await updateDoc(eventRef, {
-        booked: {
-          [date]: arrayUnion({
-            start: time.split("-")[0].trim(),
-            end: time.split("-")[1].trim(),
-            members,
-          }),
-        },
+        [`booked.${date}`]: FieldValue.arrayUnion({
+          start: time.start.trim(),
+          end: time.end.trim(),
+          members,
+        }), 
       });
+
     } else {
       // if date doesn't exist, create new array
+
       await setDoc(
         eventRef,
         {
