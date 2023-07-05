@@ -22,8 +22,6 @@
 
 ---
 
-<br>
-
 ## 📒 Table of Contents
 
 - [📒 Table of Contents](#-table-of-contents)
@@ -33,8 +31,6 @@
 - [🗺 Roadmap](#-roadmap)
 
 ---
-
-<br>
 
 ## 📍 Overview
 
